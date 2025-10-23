@@ -1,12 +1,3 @@
-function pipCfg(){
-  // globals (window.__KZS_PIPCFG__) yoksa LS fallback
-  try{
-    return Object.assign(
-      { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true },
-      window.__KZS_PIPCFG__ || JSON.parse(localStorage.getItem('kzs_pip_cfg_v1')||'{}')
-    );
-  }catch{ return { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true }; }
-}
 
 // src/pip.js
 import { S, sub, setCounter, broadcast } from './state.js';
@@ -176,7 +167,9 @@ export async function openDocPiP(){
   `;
 
   const $ = (s, root=pip.document) => root.querySelector(s);
-  // === Kullanıcı ayarları -> PiP düzeni ===
+  const $ = (s, root=pip.document) => root.querySelector(s);
+
+// === PiP ayarlarını oku ve uygula ===
 function pipCfg(){
   try{
     return Object.assign(
@@ -198,7 +191,7 @@ function applyPipLayout(){
   D.getElementById('hudNext').hidden     = !c.showNext;
   D.getElementById('counterCard').hidden = !c.showCounter;
 
-  // Üst HUD kolon sayısını görünene göre ayarla
+  // Üst HUD kolonlarını görünene göre ayarla
   const hud = D.querySelector('.hud');
   const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
   if (hud){
@@ -207,35 +200,14 @@ function applyPipLayout(){
       vis===2 ? '1fr 1fr' : '1fr';
   }
 
-  // 2 dk overlay kapalıysa body'e işaret koy
+  // 2 dk overlay kapalıysa işaret bırak
   D.body.classList.toggle('no-alert', !c.alertOverlay);
 }
 
 // açılışta uygula + ayar değişince tekrar boya
 applyPipLayout();
-const unPipCfg = (window.sub && sub('pipCfg', applyPipLayout)) || null;
+const unPipCfg = (sub && sub('pipCfg', applyPipLayout)) || null;
 
-
-  // PiP görünümünü ayarlayan yardımcı (pip içinde çalışır)
-function applyPipLayout() {
-  const c = pipCfg();
-  const d = pip.document;
-
-  const hud = d.querySelector('.hud');
-  d.querySelector('#hudTask').hidden    = !c.showTask;
-  d.querySelector('#hudClock').hidden   = !c.showClock;
-  d.querySelector('#hudNext').hidden    = !c.showNext;
-  d.querySelector('#counterCard').hidden= !c.showCounter;
-
-  // görünen hücre sayısına göre kolonlar
-  const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
-  if (vis === 3)      hud.style.gridTemplateColumns = 'minmax(0,1fr) auto minmax(0,1fr)';
-  else if (vis === 2) hud.style.gridTemplateColumns = '1fr 1fr';
-  else                hud.style.gridTemplateColumns = '1fr';
-
-  // 2 dk overlay’i açık/kapalı
-  d.body.classList.toggle('no-alert', !c.alertOverlay);
-}
 
 
   // ==== UYARI MODU (2 dk kala) ====
@@ -346,7 +318,7 @@ function applyPipLayout() {
   $('#r').addEventListener('click', () => { setCounter(0); broadcast('counter', S.counter); });
 
   const unCounter = sub('counter', (val) => { v.textContent = String(val); });
-  const unPipCfg = sub && sub('pipCfg', () => applyPipLayout());
+ 
 
 
   // ——— Dashboard snapshot
@@ -373,9 +345,8 @@ function applyPipLayout() {
     applyPipLayout();
   }, 1000);
 
-  pip.addEventListener('pagehide', () => {
-  try { unPipCfg && unPipCfg(); } catch {}
-  unCounter(); unLang(); mo.disconnect();
+ pip.addEventListener('pagehide', () => {
+  unCounter(); unLang(); mo.disconnect(); unPipCfg && unPipCfg();
 });
 }
 
