@@ -1,3 +1,8 @@
+const btnSettings = document.querySelector('#tbSettings');
+btnSettings && btnSettings.addEventListener('click', () => {
+  window.openPipSettings && window.openPipSettings();
+});
+
 // src/topbar-icons.js — topbar icon davranışları (modül değil)
 (function(){
   const $  = (s, r=document) => r.querySelector(s);

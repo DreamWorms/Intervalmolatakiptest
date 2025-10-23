@@ -63,6 +63,9 @@ function paintIconbarLabels(){
     const el = document.querySelector(sel);
     if (!el) return;
     el.textContent = key ? (t(S.lang, key) || fallback) : (fallback || '');
+    set('#tbSettingsLbl', 'settings');
+const stBtn = document.querySelector('#tbSettings');
+if (stBtn) stBtn.title = t(S.lang, 'settings');
   };
 
   set('#tbThemeLbl',   'navTheme');
