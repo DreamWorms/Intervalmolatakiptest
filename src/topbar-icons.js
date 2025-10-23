@@ -152,14 +152,6 @@ window.paintIconbarLabels = paintIconbarLabels;
   paintIconbarLabels();
 })();
 
-document.addEventListener('click', (e) => {                 // EKLE
-  const setBtn = e.target.closest('#btnSettings, #tbSettings, [data-action="settings"]');
-  if (!setBtn) return;
-  e.preventDefault();
-  window.openPipSettings && window.openPipSettings();
-});
-
-
 
 // Evrensel delege — tek kez ekle
 document.addEventListener('click', (e) => {
