@@ -59,40 +59,39 @@ paintTexts();
 
 // === Üst bar ikon etiketlerini boyayan fonksiyon
 function paintIconbarLabels(){
-  const set = (sel, key, fallback='')=>{
+  const setLabel = (sel, key, fallback='')=>{
     const el = document.querySelector(sel);
     if (!el) return;
     el.textContent = key ? (t(S.lang, key) || fallback) : (fallback || '');
-    set('#tbSettingsLbl', 'settings');
-const stBtn = document.querySelector('#tbSettings');
-if (stBtn) stBtn.title = t(S.lang, 'settings');
   };
 
-  set('#tbThemeLbl',   'navTheme');
-  set('#tbLangLbl',    'labelLang');
-  set('#tbFriendsLbl', 'navFriends');
-  set('#tbSettingsLbl', 'settings', 'Ayarlar');
+  // Label yazıları
+  setLabel('#tbThemeLbl',   'navTheme');
+  setLabel('#tbLangLbl',    'labelLang');
+  setLabel('#tbFriendsLbl', 'navFriends');
+  setLabel('#tbPipLbl',     'navPip');
+  setLabel('#tbSettingsLbl','settings','Ayarlar'); // Ayarlar etiketi
 
-  // Wellness çevirilmesin
+  // Wellness sabit kalsın
   const wl = document.querySelector('#tbWellnessLbl');
   if (wl) wl.textContent = 'Wellness';
 
-  // PiP kısa ve sabit
-  set('#tbPipLbl', 'navPip');
+  // Buton title'ları
+  const themeBtn = document.querySelector('#btnTheme');
+  const langBtn  = document.querySelector('#btnLang');
+  const frBtn    = document.querySelector('#openFriends');
+  const wlBtn    = document.querySelector('#openWellness');
+  const pipBtn   = document.querySelector('#openDocPipBtn');
+  const stBtn    = document.querySelector('#tbSettings');
 
-  // buton title'ları da dil alsın
-  const themeBtn   = document.querySelector('#btnTheme');
-  const langBtn    = document.querySelector('#btnLang');
-  const frBtn      = document.querySelector('#openFriends');
-  const wlBtn      = document.querySelector('#openWellness');
-  const pipBtn     = document.querySelector('#openDocPipBtn');
-  const setBtn    = document.querySelector('#tbSettings');
   if (themeBtn) themeBtn.title = t(S.lang, 'navTheme');
   if (langBtn)  langBtn.title  = t(S.lang, 'labelLang');
   if (frBtn)    frBtn.title    = t(S.lang, 'navFriends');
   if (wlBtn)    wlBtn.title    = 'Wellness';
   if (pipBtn)   pipBtn.title   = 'PiP';
+  if (stBtn)    stBtn.title    = t(S.lang, 'settings');
 }
+
 paintIconbarLabels();
 sub('lang', paintIconbarLabels);
 
