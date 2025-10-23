@@ -246,4 +246,5 @@ import './season-badges.js';
   setInterval(check, 1000);
 })();
 
+import './pip-settings.js';
 

@@ -1280,3 +1280,5 @@ html, body{ overflow-x:hidden; }
 .tb-icn.tb-pip{ box-shadow:none !important; }
 .tb-icn.tb-pip::before,
 .tb-icn.tb-pip::after{ content:none !important; }
+
+.hud[style*="1fr;"] .clock { font-size: clamp(20px, 7vw, 30px); }

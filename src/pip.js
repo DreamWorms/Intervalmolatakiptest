@@ -1,3 +1,45 @@
+function pipCfg(){
+  // globals (window.__KZS_PIPCFG__) yoksa LS fallback
+  try{
+    return Object.assign(
+      { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true },
+      window.__KZS_PIPCFG__ || JSON.parse(localStorage.getItem('kzs_pip_cfg_v1')||'{}')
+    );
+  }catch{ return { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true }; }
+}
+
+function applyPipLayout(){
+  const c = pipCfg();
+  const hud = $('.hud', pip.document);
+  $('#hudTask',  pip.document).hidden = !c.showTask;
+  $('#hudClock', pip.document).hidden = !c.showClock;
+  $('#hudNext',  pip.document).hidden = !c.showNext;
+  $('#counterCard', pip.document).hidden = !c.showCounter;
+
+  // kaç hücre görünürse o kadar kolon
+  const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
+  if (vis === 3) hud.style.gridTemplateColumns = 'minmax(0,1fr) auto minmax(0,1fr)';
+  else if (vis === 2) hud.style.gridTemplateColumns = '1fr 1fr';
+  else hud.style.gridTemplateColumns = '1fr';
+
+  // 2 dk overlay’i aç/kapat
+  pip.document.body.classList.toggle('no-alert', !c.alertOverlay);
+}
+
+applyPipLayout();                  // pencere açıldıktan sonra
+…
+const syncTimer = setInterval(() => {
+  if (pip.closed) { clearInterval(syncTimer); return; }
+  applyDash(window.__KZS_LAST_DASH__);
+  checkAlertByEta();
+  copyThemeVarsToPip(); copyWallpaperToPip();
+  applyPipLayout();               // << ekle
+}, 1000);
+
+const unPipCfg = sub && sub('pipCfg', () => applyPipLayout());
+pip.addEventListener('pagehide', () => { unPipCfg && unPipCfg(); /* …diğer unsub’lar… */ });
+
+
 // src/pip.js
 import { S, sub, setCounter, broadcast } from './state.js';
 import { t } from './i18n.js';
@@ -124,20 +166,20 @@ export async function openDocPiP(){
 
   <div class="wrap">
     <div class="hud">
-      <div class="cell left">
+      <div class="cell left" id="hudTask">
         <div class="label" id="pipTaskLabel">Mevcut Interval</div>
         <div class="val"   id="pipTaskAmount">0</div>
       </div>
-      <div class="cell center">
+      <div class="cell center" id="hudClock">
         <div class="clock" id="pipClock">--:--:--</div>
       </div>
-      <div class="cell right" style="text-align:right">
+      <div class="cell right" id="hudNext">
         <div class="label" id="pipNextLabel">Sıradaki Mola</div>
         <div class="val"   id="pipNextEta">--:--:--</div>
       </div>
     </div>
 
-    <div class="counter-card">
+    <div class="counter-card" id="counterCard">
       <div class="top-hint" id="pipHint">Sol tık +1 · Sağ tık −1</div>
       <button id="pad" class="pad" title="Sol tık +1 · Sağ tık −1">
         <span id="v" class="face">0</span>
@@ -195,6 +237,7 @@ export async function openDocPiP(){
     pip.document.body.classList.remove('alerting');
     $('#pipAlert').hidden = true;
   }
+  if (pip.document.body.classList.contains('no-alert')) return;
   function checkAlertByEta(){
     const txt = $('#pipNextEta')?.textContent || '';
     const secs = parseEtaToSeconds(txt);
@@ -292,3 +335,5 @@ export async function openDocPiP(){
     unCounter(); unLang(); mo.disconnect();
   });
 }
+
+
