@@ -329,6 +329,6 @@ function applyPipLayout() {
   try { unPipCfg && unPipCfg(); } catch {}
   unCounter(); unLang(); mo.disconnect();
 });
-
+}
 
 
