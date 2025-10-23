@@ -68,6 +68,7 @@ function paintIconbarLabels(){
   set('#tbThemeLbl',   'navTheme');
   set('#tbLangLbl',    'labelLang');
   set('#tbFriendsLbl', 'navFriends');
+  set('#tbSettingsLbl', 'settings', 'Ayarlar');
 
   // Wellness çevirilmesin
   const wl = document.querySelector('#tbWellnessLbl');
@@ -82,6 +83,7 @@ function paintIconbarLabels(){
   const frBtn      = document.querySelector('#openFriends');
   const wlBtn      = document.querySelector('#openWellness');
   const pipBtn     = document.querySelector('#openDocPipBtn');
+  const setBtn    = document.querySelector('#tbSettings');
   if (themeBtn) themeBtn.title = t(S.lang, 'navTheme');
   if (langBtn)  langBtn.title  = t(S.lang, 'labelLang');
   if (frBtn)    frBtn.title    = t(S.lang, 'navFriends');
