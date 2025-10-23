@@ -167,8 +167,6 @@ export async function openDocPiP(){
   `;
 
   const $ = (s, root=pip.document) => root.querySelector(s);
-  const $ = (s, root=pip.document) => root.querySelector(s);
-
 // === PiP ayarlarını oku ve uygula ===
 function pipCfg(){
   try{
