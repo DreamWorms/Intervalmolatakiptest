@@ -27,7 +27,6 @@ function applyPipLayout(){
 }
 
 applyPipLayout();                  // pencere açıldıktan sonra
-…
 const syncTimer = setInterval(() => {
   if (pip.closed) { clearInterval(syncTimer); return; }
   applyDash(window.__KZS_LAST_DASH__);

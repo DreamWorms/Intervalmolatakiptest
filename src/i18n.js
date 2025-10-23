@@ -63,7 +63,7 @@ const I18N = {
     pipPresetFocus: 'Odak (sayaç)',
     pipReset: 'Varsayılanlara dön',
     close: 'Kapat',
-    save: 'Kaydet'
+    save: 'Kaydet',
 
     // — PiP 2 dk overlay
     pipSoonTitle: 'Mola Yaklaşıyor',
