@@ -374,7 +374,8 @@ function applyPipLayout() {
   }, 1000);
 
   pip.addEventListener('pagehide', () => {
-  unCounter(); unLang(); mo.disconnect(); unPipCfg && unPipCfg();
+  try { unPipCfg && unPipCfg(); } catch {}
+  unCounter(); unLang(); mo.disconnect();
 });
 }
 
