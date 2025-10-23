@@ -21,6 +21,9 @@ export async function openDocPiP(){
   // ============ HTML + CSS ============
   pip.document.body.innerHTML = `
   <style>
+  /* Güvenli gizleme */
+[hidden]{ display:none !important; }
+.no-alert #pipAlert{ display:none !important; }
     :root{
       /* Ana ekrandan kopyalanacak; şimdilik yedek değerler */
       --fg:#e9edf4; --muted:#9aa6b2; --surface:rgba(12,16,22,.58); --bd:rgba(144,224,255,.22);
@@ -141,7 +144,7 @@ export async function openDocPiP(){
       <div class="cell center" id="hudClock">
         <div class="clock" id="pipClock">--:--:--</div>
       </div>
-      <div class="cell right" id="hudNext">
+      <div class="cell right" style="text-align:right" id="hudNext">
         <div class="label" id="pipNextLabel">Sıradaki Mola</div>
         <div class="val"   id="pipNextEta">--:--:--</div>
       </div>
@@ -173,6 +176,45 @@ export async function openDocPiP(){
   `;
 
   const $ = (s, root=pip.document) => root.querySelector(s);
+  // === Kullanıcı ayarları -> PiP düzeni ===
+function pipCfg(){
+  try{
+    return Object.assign(
+      { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true },
+      window.__KZS_PIPCFG__ || JSON.parse(localStorage.getItem('kzs_pip_cfg_v1')||'{}')
+    );
+  }catch{
+    return { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true };
+  }
+}
+
+function applyPipLayout(){
+  const c = pipCfg();
+  const D = pip.document;
+
+  // Görünürlük
+  D.getElementById('hudTask').hidden     = !c.showTask;
+  D.getElementById('hudClock').hidden    = !c.showClock;
+  D.getElementById('hudNext').hidden     = !c.showNext;
+  D.getElementById('counterCard').hidden = !c.showCounter;
+
+  // Üst HUD kolon sayısını görünene göre ayarla
+  const hud = D.querySelector('.hud');
+  const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
+  if (hud){
+    hud.style.gridTemplateColumns =
+      vis===3 ? 'minmax(0,1fr) auto minmax(0,1fr)' :
+      vis===2 ? '1fr 1fr' : '1fr';
+  }
+
+  // 2 dk overlay kapalıysa body'e işaret koy
+  D.body.classList.toggle('no-alert', !c.alertOverlay);
+}
+
+// açılışta uygula + ayar değişince tekrar boya
+applyPipLayout();
+const unPipCfg = (window.sub && sub('pipCfg', applyPipLayout)) || null;
+
 
   // PiP görünümünü ayarlayan yardımcı (pip içinde çalışır)
 function applyPipLayout() {
@@ -227,13 +269,19 @@ function applyPipLayout() {
     pip.document.body.classList.remove('alerting');
     $('#pipAlert').hidden = true;
   }
-  if (pip.document.body.classList.contains('no-alert')) return;
+  
   function checkAlertByEta(){
-    const txt = $('#pipNextEta')?.textContent || '';
-    const secs = parseEtaToSeconds(txt);
-    if (secs!=null && secs <= 120 && secs >= 0) enterAlert(secs);
-    else exitAlert();
+  // Ayarlardan overlay kapalıysa hiçbir şey göstermeyelim
+  if (pip.document.body.classList.contains('no-alert')) { 
+    exitAlert(); 
+    return; 
   }
+  const txt  = $('#pipNextEta')?.textContent || '';
+  const secs = parseEtaToSeconds(txt);
+  if (secs!=null && secs <= 120 && secs >= 0) enterAlert(secs);
+  else exitAlert();
+}
+
 
   // ——— Tema: değişkenleri ve duvar kâğıdını ana ekrandan aynen al
   const copyThemeVarsToPip = () => {
@@ -326,8 +374,7 @@ function applyPipLayout() {
   }, 1000);
 
   pip.addEventListener('pagehide', () => {
-  try { unPipCfg && unPipCfg(); } catch {}
-  unCounter(); unLang(); mo.disconnect();
+  unCounter(); unLang(); mo.disconnect(); unPipCfg && unPipCfg();
 });
 }
 
