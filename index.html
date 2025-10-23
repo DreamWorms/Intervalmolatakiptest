@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DDS • Interval Mola Takip</title> 
+  <link rel="stylesheet" href="./styles.css?v=9">
+</head>
+<body>
+  <header class="topbar">
+  <div class="brand">DDS <span class="muted">Interval Mola Takip</span></div>
+
+  <!-- Ortada tam ekran merkezleyen OVERLAY -->
+  <div class="season-overlay">
+    <div id="seasonBadges" class="season-badges"></div>
+  </div>
+
+  <!-- BURADAKİ .actions BLOĞUNU TAMAMIYLA DEĞİŞTİR -->
+  <div class="actions">
+    <!-- Yeni ikon bar -->
+  <!-- ÜST BAR ICONBAR -->
+<div class="iconbar" id="iconbar">
+  <div class="tb-item">
+    <button id="btnTheme" class="tb-icn" title="">
+      <span class="ico">
+        <!-- palette svg -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3a9 9 0 1 0 0 18h.5a1.5 1.5 0 0 0 1.5-1.5c0-.7-.3-1.1-.7-1.6-.6-.7-.9-1.6-.4-2.5.5-.9 1.4-1.4 2.5-1.4H16a5 5 0 0 0 0-10h-4Z"/>
+        </svg>
+      </span>
+    </button>
+    <div class="tb-label" id="tbThemeLbl"></div>
+  </div>
+
+  <div class="tb-item">
+    <button id="btnLang" class="tb-icn" title="">
+      <span class="ico">
+        <!-- globe svg -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 2c1.9 0 3.6.6 5 1.7H7C8.4 4.6 10.1 4 12 4Zm-7.3 5h14.6c.4.9.7 1.9.7 3s-.3 2.1-.7 3H4.7A7.9 7.9 0 0 1 4 12c0-1.1.3-2.1.7-3Zm2.3 8h10.6A7.9 7.9 0 0 1 12 20c-2.4 0-4.6-1-6-3Z"/>
+        </svg>
+      </span>
+    </button>
+    <div class="tb-label" id="tbLangLbl"></div>
+  </div>
+
+  <div class="tb-item">
+    <button id="openFriends" class="tb-icn" title="">
+      <span class="ico">
+        <!-- users svg -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M16 11c1.7 0 3-1.6 3-3.5S17.7 4 16 4s-3 1.6-3 3.5S14.3 11 16 11ZM8 11c1.7 0 3-1.6 3-3.5S9.7 4 8 4 5 5.6 5 7.5 6.3 11 8 11Zm8 2c-3.3 0-6 2.2-6 5v1h12v-1c0-2.8-2.7-5-6-5ZM8 13c-3.3 0-6 2.2-6 5v1h6v-1c0-1.7.7-3.2 1.8-4.3A9.2 9.2 0 0 0 8 13Z"/>
+        </svg>
+      </span>
+    </button>
+    <div class="tb-label" id="tbFriendsLbl"></div>
+  </div>
+
+  <div class="tb-item">
+    <button id="openWellness" class="tb-icn" title="">
+      <span class="ico">
+        <!-- notebook svg -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 5h6v2H9V8Zm0 4h6v2H9v-2Z"/>
+        </svg>
+      </span>
+    </button>
+    <div class="tb-label" id="tbWellnessLbl"></div>
+  </div>
+
+  <div class="tb-item">
+    <!-- SADECE METİN: PiP -->
+   <button id="btnDocPip" class="tb-icn pip-glow">
+  <span class="ico pip-label">PiP</span>
+</button>
+<button id="openDocPipBtn" hidden></button>
+    <div class="tb-label" id="tbPipLbl"></div>
+  </div>
+</div>
+
+
+
+    <!-- Küçük popoverlar (seçimler bu panellerde) -->
+    <div id="popTheme" class="tb-pop" hidden>
+      <div class="tb-pop-head">Tema</div>
+      <select id="themeSelect" aria-label="Tema seçimi">
+        <option value="">Varsayılan</option>
+        <option value="telus">TELUS Digital</option>
+        <option value="xarp">XARP</option>
+        <option value="hellokitty">Hello Kitty</option>
+        <option value="halloween">Halloween</option>
+        <option value="generals">Generals</option>
+        <option value="pirates">Pirates of Keyframe</option>
+        <option value="tdog">TDOG</option>
+        <option value="cp77">Cyberpunk 2077</option>
+        <option value="berserk1">Berserk 1</option>
+        <option value="berserk2">Berserk 2</option>
+        <option value="xmas">XMAS</option>
+      </select>
+    </div>
+
+    <div id="popLang" class="tb-pop" hidden>
+      <div class="tb-pop-head">Dil</div>
+      <select id="langSelect" aria-label="Dil seçimi">
+        <option value="tr">Türkçe</option>
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="bg">Български</option>
+      </select>
+    </div>
+
+    <!-- Eski (gizli) kontroller DOM’da kalsın; JS’ler bunlara bağlı -->
+    <button id="openDocPipBtn" class="primary" style="display:none">Doc PiP</button>
+  </div>
+</header>
+
+
+<!-- ===== KZ DOCK (floating menu) ===== -->
+<div id="kzDock" class="kzDock" aria-label="Hızlı Menü">
+  <button id="kzDockTrigger" class="kzDock-trigger" aria-expanded="false" aria-controls="kzDockPanel" title="Menü">
+    <!-- 3x3 grid ikon -->
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
+      <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+      <circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+    </svg>
+  </button>
+
+  <div id="kzDockPanel" class="kzDock-panel" hidden>
+    <button class="kzDock-item" id="openFriends">
+      <span class="kzDock-icn" aria-hidden="true">
+        <!-- friends icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5S14.34 11 16 11zM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11zM8 13c-3.33 0-6 2.24-6 5v1h8v-1c0-1.66.67-3.16 1.76-4.29C10.85 13.27 9.48 13 8 13zm8 0c-.71 0-1.39.09-2.03.26 1.53 1.18 2.53 3 2.53 4.99V19h7v-1c0-2.76-2.67-5-5.5-5H16z"/>
+        </svg>
+      </span>
+      <span>Arkadaşlar</span>
+    </button>
+
+    <button class="kzDock-item" id="openWellness">
+      <span class="kzDock-icn" aria-hidden="true">
+        <!-- notebook icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 3v12h10V6H7zm2 2h6v2H9V8zm0 4h6v2H9v-2z"/>
+        </svg>
+      </span>
+      <span>Wellness Defteri</span>
+    </button>
+
+    <!-- ileride eklenecekler: Doc PiP, Tema/Dil, Ayarlar… -->
+  </div>
+</div>
+
+<!-- ===== Modals (FRIENDS + WELLNESS) ===== -->
+
+<!-- FRIENDS -->
+<div class="kzModal" id="friendsModal" hidden>
+  <div class="kzModal-overlay" data-close="friendsModal"></div>
+  <div class="kzModal-dialog" role="dialog" aria-modal="true" aria-labelledby="friendsTitle">
+    <div class="kzModal-head">
+      <h3 id="friendsTitle">Arkadaşlar</h3>
+      <button class="kzModal-close" data-close="friendsModal" aria-label="Kapat">✕</button>
+    </div>
+
+    <div class="kzModal-body" id="friendsBody">
+  <!-- ÜST ARAÇ ÇUBUĞU -->
+  <div class="frToolbar">
+  <label>Arkadaş</label>
+  <select id="frSelect" aria-label="Arkadaş seç"></select>
+  <input id="frName" type="text" class="text" placeholder="Ad yaz → otomatik kaydedilir">
+  <button id="btnFrAdd" class="kzBtn">Ekle</button>
+  <button id="btnFrDel" class="kzBtn">Sil</button>
+  <label class="frPipLbl">
+    <input id="frPip" type="checkbox"> Ana Ekranda Göster
+  </label>
+</div>
+
+
+  <!-- İKİ KOLON: SOLDA ARKADAŞ BLOKLARI, SAĞDA KESİŞİMLER -->
+  <div class="frWrap">
+    <div class="frLeft">
+      <h4 class="frSecTitle">Seçili arkadaşın mola blokları</h4>
+      <div id="frGrid" class="frGrid"><!-- kutular JS ile gelecektir --></div>
+      <p class="kzHint">Süre ve başlangıç saatlerini yazdıkça sağdaki “Kesişen Molalar” anında güncellenir.</p>
+    </div>
+
+    <aside class="olapPanel">
+      <div class="olapHead">Kesişen Molalar (Sen ↔ Arkadaş)</div>
+      <div id="olapList" class="olapList kzHint">Kesişim bulunamadı.</div>
+    </aside>
+  </div>
+</div>
+    </div><!-- /.kzModal-dialog -->
+</div><!-- /#friendsModal -->
+
+
+<!-- WELLNESS -->
+<div class="kzModal" id="wellnessBookModal" hidden>
+  <div class="kzModal-overlay" data-close="wellnessBookModal"></div>
+  <div class="kzModal-dialog" role="dialog" aria-modal="true" aria-labelledby="wellnessTitle">
+    <div class="kzModal-head">
+      <h3 id="wellnessTitle">Wellness Defteri</h3>
+      <button class="kzModal-close" data-close="wellnessBookModal" aria-label="Kapat">✕</button>
+    </div>
+
+    <div class="kzModal-body">
+      <section class="kzSec">
+        <h4>Durum</h4>
+        <div class="kzRowEnd">
+          <div id="wnStatus">Wellness pasif</div>
+          <span class="kzFlex"></span>
+          <button id="wnStart" class="kzBtn pri">Başlat</button>
+          <button id="wnEnd" class="kzBtn">Bitir</button>
+          <button id="wnNote" class="kzBtn">Not Ekle</button>
+        </div>
+      </section>
+
+      <section class="kzSec">
+        <h4>Kayıtlar</h4>
+        <div class="kzTableWrap">
+          <table class="kzTable" id="wnTable">
+            <thead>
+              <tr><th>Başlangıç</th><th>Bitiş</th><th>Süre</th><th>Not</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="kzRowEnd mt8">
+          <button id="wnExport" class="kzBtn">Dışa Aktar (JSON)</button>
+          <span class="kzFlex"></span>
+          <button id="wnClear" class="kzBtn danger">Tümünü Sil</button>
+        </div>
+      </section>
+    </div><!-- /.kzModal-body -->
+  </div><!-- /.kzModal-dialog -->
+</div><!-- /#wellnessBookModal -->
+
+
+
+
+
+  <!-- ÜST SIRA: Saat (tam), altta 3’lü: Görev – Sıradaki Mola – Sayaç -->
+  <section class="wrap" id="dashWrap">
+    <div class="card clock-card">
+      <div id="liveClock" class="clock">--:--:--</div>
+    </div>
+
+    <div class="card summary-card" id="taskCard">
+  <div class="metric-card">
+    <div class="metric-header">
+      <span class="pill pill-blue" id="taskTitle">Mevcut Interval</span>
+      <span class="metric-sub">Hedef</span>
+    </div>
+
+    <div class="metric-body">
+      <span class="metric-value" id="taskAmount">0</span>
+    </div>
+  </div>
+</div>
+
+
+    <div class="card summary-card" id="nextBreakCard">
+  <div class="metric-card">
+    <div class="metric-header">
+      <span class="pill pill-pink" id="nextBreakTitle">Sıradaki Mola</span>
+      <span class="metric-sub" id="nextBreakName">—</span>
+    </div>
+
+    <div class="metric-body">
+      <span class="metric-time" id="nextBreakEta">--:--:--</span>
+    </div>
+  </div>
+</div>
+
+
+    <!-- YENİ Sayaç (pad + kısayollar) -->
+<section class="card summary-card" id="counterCard">
+  <div class="metric-header">
+  <span class="pill pill-violet" id="counterTitle">Sayaç</span>
+  <span class="metric-sub" id="kbHintTiny">Klavye: ↑ / ↓ / R / + / −</span>
+</div>
+
+
+  <button id="counterPad" class="counter-pad" title="Sol tık +1 • Sağ tık −1">
+    <span id="countVal" class="count-face">0</span>
+  </button>
+
+  <div class="counter-actions">
+    <button class="chip" data-step="2">+2</button>
+    <button class="chip" data-step="4">+4</button>
+    <button class="chip" data-step="8">+8</button>
+    <button id="resetBtn" class="ghost">Sıfırla</button>
+  </div>
+
+  <p class="hint tiny" id="kbHint">Klavye: ↑ / ↓ / R / + / −</p>
+  <p class="hint" id="topLevelHint"></p>
+  </section>
+</section>
+
+  <!-- ÖZEL INTERVAL -->
+<section id="siRow" class="wrap">
+<div id="siBlock" class="card si">
+  <h3 id="siTitle">Özel interval</h3>
+  <div class="si-grid">
+    <!-- sol: kontroller -->
+    <div class="control">
+      <div>
+        <label id="siLenLabel" class="muted tiny">Dakika</label>
+        <div id="siLen" class="btn-group">
+          <button class="chip" data-len="5">5</button>
+          <button class="chip" data-len="10">10</button>
+          <button class="chip" data-len="15">15</button>
+          <button class="chip" data-len="20">20</button>
+        </div>
+      </div>
+
+      <div>
+        <label id="siStartLabel" class="muted tiny">Vardiya</label>
+        <div class="time-pill">
+          <select id="siHour"></select>
+          <span class="sep">:</span>
+          <select id="siMinute"></select>
+          <!-- state.js / special-interval-ui.js burada bu inputu okuyor -->
+          <input id="siStart" type="hidden" value="00:00">
+        </div>
+      </div>
+
+      <div class="si-actions">
+        <button id="siSave" class="primary tiny-btn">Kaydet</button>
+        <span id="siInfo" class="muted tiny"></span>
+      </div>
+    </div>
+
+    <!-- sağ: büyük liste -->
+    <div>
+      <label id="siLinesLabel" class="muted tiny">Değerler (her satır bir sayı)</label>
+      <textarea id="siLines" class="text mono biglist"
+        placeholder="ör.&#10;15&#10;34&#10;5&#10;44"></textarea>
+    </div>
+  </div>
+</div>
+</section>
+
+
+  <main class="wrap">
+    <!-- Molalar -->
+    <section class="card">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h2 id="breaksTitle">Molalar</h2>
+        <button id="clearBreaksBtn" class="ghost tiny-btn">Molaları Sil</button>
+      </div>
+      <div id="breakGrid" class="break-grid"></div>
+    </section>
+  </main>
+  
+  </main>
+
+  <!-- Arkadaş PiP paneli (sol üst) -->
+  <div id="frPipPanel" class="frPip" aria-hidden="true" data-collapsed="false">
+    <div class="head">
+      <strong id="frPipTitle">Arkadaşlar</strong>
+      <div>
+        <button id="frPipMin" class="kzBtn">–</button>
+        <button id="frPipClose" class="kzBtn">✕</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="mini">Arkadaş Mola Blokları</div>
+      <div id="frPipBreaks" class="mini">–</div>
+      <div class="sep"></div>
+      <div class="mini">Kesişimler</div>
+      <div id="frPipOverlaps" class="mini">–</div>
+    </div>
+  </div>
+
+  <!-- script’ler BUNDAN SONRA -->
+  <script type="module" src="./src/main.js"></script>
+  <div id="themeBackdrop" aria-hidden="true"></div>
+  <script src="src/dock.js"></script>
+  <script src="src/friends.js"></script>
+  <script src="src/wellnessBook.js"></script>
+  <script src="src/topbar-icons.js"></script>
+  <link rel="stylesheet" href="/src/theme-vars.css">
+</body>
+</html>
+
