@@ -8,37 +8,6 @@ function pipCfg(){
   }catch{ return { showClock:true, showTask:true, showNext:true, showCounter:true, alertOverlay:true }; }
 }
 
-function applyPipLayout(){
-  const c = pipCfg();
-  const hud = $('.hud', pip.document);
-  $('#hudTask',  pip.document).hidden = !c.showTask;
-  $('#hudClock', pip.document).hidden = !c.showClock;
-  $('#hudNext',  pip.document).hidden = !c.showNext;
-  $('#counterCard', pip.document).hidden = !c.showCounter;
-
-  // kaç hücre görünürse o kadar kolon
-  const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
-  if (vis === 3) hud.style.gridTemplateColumns = 'minmax(0,1fr) auto minmax(0,1fr)';
-  else if (vis === 2) hud.style.gridTemplateColumns = '1fr 1fr';
-  else hud.style.gridTemplateColumns = '1fr';
-
-  // 2 dk overlay’i aç/kapat
-  pip.document.body.classList.toggle('no-alert', !c.alertOverlay);
-}
-
-applyPipLayout();                  // pencere açıldıktan sonra
-const syncTimer = setInterval(() => {
-  if (pip.closed) { clearInterval(syncTimer); return; }
-  applyDash(window.__KZS_LAST_DASH__);
-  checkAlertByEta();
-  copyThemeVarsToPip(); copyWallpaperToPip();
-  applyPipLayout();               // << ekle
-}, 1000);
-
-const unPipCfg = sub && sub('pipCfg', () => applyPipLayout());
-pip.addEventListener('pagehide', () => { unPipCfg && unPipCfg(); /* …diğer unsub’lar… */ });
-
-
 // src/pip.js
 import { S, sub, setCounter, broadcast } from './state.js';
 import { t } from './i18n.js';
@@ -205,6 +174,28 @@ export async function openDocPiP(){
 
   const $ = (s, root=pip.document) => root.querySelector(s);
 
+  // PiP görünümünü ayarlayan yardımcı (pip içinde çalışır)
+function applyPipLayout() {
+  const c = pipCfg();
+  const d = pip.document;
+
+  const hud = d.querySelector('.hud');
+  d.querySelector('#hudTask').hidden    = !c.showTask;
+  d.querySelector('#hudClock').hidden   = !c.showClock;
+  d.querySelector('#hudNext').hidden    = !c.showNext;
+  d.querySelector('#counterCard').hidden= !c.showCounter;
+
+  // görünen hücre sayısına göre kolonlar
+  const vis = [c.showTask, c.showClock, c.showNext].filter(Boolean).length;
+  if (vis === 3)      hud.style.gridTemplateColumns = 'minmax(0,1fr) auto minmax(0,1fr)';
+  else if (vis === 2) hud.style.gridTemplateColumns = '1fr 1fr';
+  else                hud.style.gridTemplateColumns = '1fr';
+
+  // 2 dk overlay’i açık/kapalı
+  d.body.classList.toggle('no-alert', !c.alertOverlay);
+}
+
+
   // ==== UYARI MODU (2 dk kala) ====
   let inAlert = false;
   let lastBreakName = (document.getElementById('nextBreakName')?.textContent || 'Mola').trim();
@@ -284,6 +275,7 @@ export async function openDocPiP(){
     const prep = $('#pipPrepare');  if (prep) prep.textContent = t(S.lang, 'pipPrepareHint');
 };
   paintTexts();
+  applyPipLayout();
   const unLang = sub('lang', paintTexts);
 
   // ——— Sayaç
@@ -306,6 +298,8 @@ export async function openDocPiP(){
   $('#r').addEventListener('click', () => { setCounter(0); broadcast('counter', S.counter); });
 
   const unCounter = sub('counter', (val) => { v.textContent = String(val); });
+  const unPipCfg = sub && sub('pipCfg', () => applyPipLayout());
+
 
   // ——— Dashboard snapshot
   const applyDash = (d) => {
@@ -328,11 +322,13 @@ export async function openDocPiP(){
     checkAlertByEta();          // 2 dk kala uyarıyı yönet
     copyThemeVarsToPip();
     copyWallpaperToPip();
+    applyPipLayout();
   }, 1000);
 
   pip.addEventListener('pagehide', () => {
-    unCounter(); unLang(); mo.disconnect();
-  });
-}
+  try { unPipCfg && unPipCfg(); } catch {}
+  unCounter(); unLang(); mo.disconnect();
+});
+
 
 
