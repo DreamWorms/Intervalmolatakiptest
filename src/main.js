@@ -188,8 +188,66 @@ function mountTimePill(){
 
 mountBreaks('#breakGrid');
 mountSpecialIntervalUI();
-mountTimePill();           // << burası önemli
+mountTimePill();          
 startDashboardTicker();
+
+// ——— Foldable (katlanabilir) panel yardımcıları ———
+function setupFoldable({ titleSel, storageKey }){
+  const title = document.querySelector(titleSel);
+  if (!title) return;
+
+  // Kartın kökünü bul (karta en uygun sarmalayıcıyı dene)
+  const root = title.closest('.card, .kzCard, .panel, .box, section') || title.closest('div');
+  if (!root) return;
+  root.setAttribute('data-fold','');
+
+  // Kökün doğrudan çocukları arasında başlığı içeren elemanı "head" olarak işaretle
+  const headChild = Array.from(root.children).find(ch => ch.contains(title)) || root.firstElementChild;
+  headChild.setAttribute('data-fold-head','');
+
+  // Diğer kardeşleri "body" olarak işaretle (kapanınca bunlar gizlenecek)
+  Array.from(root.children).forEach(ch => {
+    if (ch !== headChild) ch.setAttribute('data-fold-body','');
+  });
+
+  // Sağ üste katlama butonunu ekle
+  let btn = headChild.querySelector('.fold-btn');
+  if (!btn){
+    btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fold-btn';
+    btn.setAttribute('aria-label', 'Katla');
+    btn.title = 'Katla / Aç';
+    btn.innerHTML = '<span class="chev">▾</span>';
+    headChild.appendChild(btn);
+  }
+
+  // Durumu yükle & uygula
+  const KEY = 'kzs_fold_' + storageKey;
+  let collapsed = localStorage.getItem(KEY) === '1';
+  const apply = () => {
+    if (collapsed) root.setAttribute('data-collapsed','1');
+    else           root.removeAttribute('data-collapsed');
+  };
+  apply();
+
+  // Tıklandığında değiştir & kaydet
+  btn.addEventListener('click', () => {
+    collapsed = !collapsed;
+    localStorage.setItem(KEY, collapsed ? '1' : '0');
+    apply();
+  });
+}
+
+// ——— Hangi paneller katlansın? Başlık ID’leri ile bağla ———
+// Bunlar sende zaten var: #counterTitle, #intervalTitle, #breaksTitle
+setupFoldable({ titleSel:'#counterTitle',  storageKey:'counter'  });   // Sayaç
+setupFoldable({ titleSel:'#intervalTitle', storageKey:'interval' });   // Mevcut Interval
+setupFoldable({ titleSel:'#breaksTitle',   storageKey:'breaks'   });   // Breaks
+
+// Özel İnterval başlığında bir id yoksa, HTML’de başlığa id ekle: id="siTitle"
+// sonra şunu da aç:
+setupFoldable({ titleSel:'#siTitle',       storageKey:'special'  });   // Özel İnterval
 
 // ========== Wallpaper Tema Seçici ==========
 (function () {
