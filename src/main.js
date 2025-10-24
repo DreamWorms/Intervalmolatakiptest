@@ -251,25 +251,65 @@ setupFoldable({ titleSel:'#breaksTitle',   storageKey:'breaks'   });   // Breaks
 // sonra şunu da aç:
 setupFoldable({ titleSel:'#siTitle',       storageKey:'special'  });   // Özel İnterval
 
-// ========== Wallpaper Tema Seçici ==========
+// ========== Wallpaper / Video Tema Seçici ==========
+// Bu blok, normal görselleri "data-theme" ile; video temayı da <video id="bgVideo"> ile yönetir.
 (function () {
   const root = document.documentElement;
   const sel  = document.getElementById('themeSelect');
   if (!sel) return;
 
-  // açılışta kaydedilmiş temayı yükle
+  // Video dosyası eşlemesi
+  const VIDEO_MAP = {
+    // tema anahtarı : dosya yolu
+    swimcorgi: '/walls/swimming-corgi.mp4',
+  };
+
+  // Videoyu ekle/çıkar
+  function applyThemeVideo(theme){
+    const holder = document.getElementById('themeBackdrop'); // zaten HTML’de var
+    if (!holder) return;
+
+    let v = document.getElementById('bgVideo');
+    const videoSrc = VIDEO_MAP[theme];
+
+    // Video teması değilse: videoyu kaldır, sadece arkaplan görselleri kalsın
+    if (!videoSrc){
+      if (v) v.remove();
+      return;
+    }
+
+    // Video teması ise: yoksa oluştur, varsa src’yi güncelle
+    if (!v){
+      v = document.createElement('video');
+      v.id = 'bgVideo';
+      v.autoplay = v.muted = v.loop = true;
+      v.playsInline = true;
+      holder.appendChild(v);
+    }
+    if (v.src !== (location.origin + videoSrc)) v.src = videoSrc;
+  }
+
+  // Açılışta kaydedilmiş tema
   const saved = localStorage.getItem('theme') || '';
   if (saved) root.setAttribute('data-theme', saved);
+  else       root.removeAttribute('data-theme');
   sel.value = saved;
 
-  // değişince uygula + kaydet
+  // Açılışta video durumunu da uygula
+  applyThemeVideo(saved);
+
+  // Değişince uygula + kaydet
   sel.addEventListener('change', (e) => {
     const v = e.target.value || '';
     if (v) root.setAttribute('data-theme', v);
-    else root.removeAttribute('data-theme');
+    else   root.removeAttribute('data-theme');
     localStorage.setItem('theme', v);
+
+    // Video teması ise videoyu tak
+    applyThemeVideo(v);
   });
 })();
+
 import './season-badges.js';
 
 // === WELLNESS: geri sayım "00:00:00" olunca haftalık deftere otomatik yaz ===
