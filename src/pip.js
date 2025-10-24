@@ -15,6 +15,19 @@ export async function openDocPiP(){
   /* Güvenli gizleme */
 [hidden]{ display:none !important; }
 .no-alert #pipAlert{ display:none !important; }
+
+/* PiP için video arkaplan */
+#pipBgVideo{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;           /* içeriğin arkasında */
+  pointer-events: none;  /* tıklamayı engellemesin */
+  filter: brightness(.92);
+}
+
     :root{
       /* Ana ekrandan kopyalanacak; şimdilik yedek değerler */
       --fg:#e9edf4; --muted:#9aa6b2; --surface:rgba(12,16,22,.58); --bd:rgba(144,224,255,.22);
@@ -262,18 +275,46 @@ const unPipCfg = (sub && sub('pipCfg', applyPipLayout)) || null;
     });
   };
 
-  const copyWallpaperToPip = () => {
-    const src = document.getElementById('themeBackdrop');
-    const wall = pip.document.getElementById('pipBackdrop');
-    if (!src || !wall) return;
+ // Ana ekrandaki duvar kâğıdı + video durumu ile PiP'i senkronla
+const copyWallpaperToPip = () => {
+  const src  = document.getElementById('themeBackdrop');           // ana sayfadaki holder
+  const wall = pip.document.getElementById('pipBackdrop');         // PiP arka plan div'i
+  if (!src || !wall) return;
+
+  // Ana sayfadaki video var mı?
+  const vMain = src.querySelector('#bgVideo');
+  let   vPip  = pip.document.getElementById('pipBgVideo');
+
+  if (vMain) {
+    // Video teması aktif → PiP'e video ekle/güncelle
+    if (!vPip) {
+      vPip = pip.document.createElement('video');
+      vPip.id = 'pipBgVideo';
+      vPip.autoplay = vPip.muted = vPip.loop = true;
+      vPip.playsInline = true;
+      pip.document.body.appendChild(vPip);
+    }
+    const url = vMain.currentSrc || vMain.getAttribute('src') || '';
+    if (url && vPip.src !== url) { vPip.src = url; try{ vPip.load(); }catch{} }
+    vPip.play?.().catch(()=>{});
+
+    // Arkadaki düz arka planı şeffafla ki video görünsün
+    wall.style.backgroundImage = 'none';
+    wall.style.backgroundColor = 'transparent';
+  } else {
+    // Video yok → PiP videosunu kaldır, CSS arka planını kopyala
+    if (vPip) vPip.remove();
     const cs = getComputedStyle(src);
-    wall.style.backgroundImage  = cs.backgroundImage;
-    wall.style.backgroundColor  = cs.backgroundColor || '#0b0d12';
-    wall.style.backgroundPosition = cs.backgroundPosition || 'center';
-    wall.style.backgroundRepeat   = 'no-repeat';
-    wall.style.backgroundSize     = 'cover';
+    wall.style.backgroundImage      = cs.backgroundImage;
+    wall.style.backgroundColor      = cs.backgroundColor || '#0b0d12';
+    wall.style.backgroundPosition   = cs.backgroundPosition || 'center';
+    wall.style.backgroundRepeat     = 'no-repeat';
+    wall.style.backgroundSize       = 'cover';
     wall.style.backgroundAttachment = 'fixed';
-  };
+  }
+};
+
+
 
   copyThemeVarsToPip();
   copyWallpaperToPip();
